@@ -6,7 +6,7 @@ for tc in range(int(input())):
   #다이나믹 프로그래밍을 위한 2차원 DP 테이블 초기화
   dp = []
   index = 0
-  for i in range(n):(행 기준으로 진행)
+  for i in range(n): #(행 기준으로 진행)
     dp.append(array[index:index+m])
     index += m
   #다이나믹 프로그래밍 진행(열 기준으로 진행)
