@@ -13,7 +13,7 @@ def solution(food_times, k):
   foods.sort() 
   pretime = 0
   for i, food in enumerate(foods): # 음식을 먹는 roop
-    diff = food[0] - pretime #여기서 이 diff는 위 그림들의 높이를 나타내는 거다. 즉, 위 예시라면? 1,2,2r가 될 것이다.
+    diff = food[0] - pretime #여기서 이 diff는 위 그림들의 높이를 나타내는 거다. 즉, 위 예시라면? 1,2,2가 될 것이다.
     if diff != 0:
       spend = diff * n # 현재 음식을 다먹는데 걸리는 시간
       if spend <= k:
