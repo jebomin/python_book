@@ -1,40 +1,32 @@
-import heapq
+# 최악의 경우 음식의 수만큼만 roop를 돌면 되므로 시간복잡도가 줄어든다.
+# operator 모듈의 itemgetter 함수는 주어진 인덱스(또는 여러 인덱스)에 해당하는 항목을 추출하는 함수다.
+# 주로 정렬에 사용되며, 특히 복잡한 데이터 구조에서 정렬 기준을 지정하는 데 효과적입니다.
+from operator import itemgetter
 
 def solution(food_times, k):
+  foods = [] # (먹는데 걸리는 시간, 음식 번호) 저장
+  n = len(food_times) # 음식의 수
+  for i in range(n):
+    foods.append((food_times[i], i+1))
+    
+  # 튜플의 첫번째 인덱스 기준으로 정렬(걸리는 시간이 작은 음식부터 큰 음식순으로 정렬)
+  foods.sort() 
+  pretime = 0
+  for i, food in enumerate(foods): # 음식을 먹는 roop
+    diff = food[0] - pretime #여기서 이 diff는 위 그림들의 높이를 나타내는 거다. 즉, 위 예시라면? 1,2,2r가 될 것이다.
+    if diff != 0:
+      spend = diff * n # 현재 음식을 다먹는데 걸리는 시간
+      if spend <= k:
+        k -= spend 
+        pretime = food[0]
+      else:
+        idx = k % n # 여기서 n은 남은 음식의 수이다
+        # key=itemgetter(1)은 각 튜플의 두번째 원소로 정렬한다는 의미다.
+        # 즉, 남은 음식을 번호 순으로 다시 정렬한다는 의미
+        sublist = sorted(foods[i:], key=itemgetter(1)) 
+        return sublist[idx][1]
 
-    # 전체 음식을 먹는 시간보다 네트워크 지연 시작 시간이 크거나 같다면 더 이상 먹을 음식이 없으므로 -1 출력
-    if (sum(food_times) <= k):
-        return -1
-
-    # 먹는 시간이 작은 음식부터 제거해야하므로 우선순위 큐를 사용
-    q = []
-    # 우선순위 큐에 (소요 시간, 음식 번호) 튜플을 삽입
-    for i in range(len(food_times)):
-        heapq.heappush(q, (food_times[i], i+1))
-
-    # 이전 음식 섭취까지 소요한 전체 시간
-    sum_time = 0
-    # 이전 음식의 섭취 시간
-    previous_time = 0
-    # 남은 음식 개수
-    length = len(food_times)
-
-    # [이전 음식 섭취까지 소요한 전체 시간 + 현재 음식을 섭취하기 위해 필요한 시간]이 K보다 커지면, 반복문 종료
-    # 현재 음식을 섭취하기 위한 시간은, (현재 음식 섭취 시간 - 이전 음식 섭취 시간) * 남은 음식 개수
-    while (sum_time + ((q[0][0] - previous_time) * length) <= k):
-        # 현재 음식을 우선순위 큐에서 제거하며, 현재 음식의 섭취 시간을 저장
-        now_time = heapq.heappop(q)[0]
-        # 현재 음식을 모두 섭취하기 위해 걸리는 시간을, 음식 섭취에 소요한 전체 시간에 추가
-        sum_time += (now_time - previous_time) * length
-        # 남은 음식 개수 감소
-        length -= 1
-        # 이전 음식 섭취 시간을 현재 음식 섭취 시간으로 변경
-        previous_time = now_time
-
-    # 반복문 종료 이후에는, K 발생까지 남은 시간을 확인해, K 이후에 섭취할 음식을 결정
-
-    # 우선순위큐의 남아있는 요소들을 음식 번호를 기준으로 오름차순 정렬
-    result = sorted(q, key=lambda x:x[1])
-
-    # (K 발생까지 남은 시간 % 남은 음식 개수), 배열의 idx는 0부터 시작하므로 나머지 값을 idx로 사용하면 됨
-    return result[(k-sum_time) % length][1]
+    n -= 1 # 현재 음식 다 먹음
+  # for문 도중 return이 안됬다는 것은 k가 남았다 
+  # -> 음식을 다 먹었다 -> -1 반환  
+  return -1
